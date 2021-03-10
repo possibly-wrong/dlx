@@ -18,7 +18,7 @@ def matrix_powers(r, n):
     return result
 
 def board_cover(board, pieces, rotations, optional=False):
-    """Return (pairs, optional_columns) for board exact cover problem."""
+    """Return (pairs, optional_columns, rows) for board exact cover problem."""
 
     # Enumerate all possible placements/rotations of pieces.
     rows = set()
@@ -28,6 +28,7 @@ def board_cover(board, pieces, rotations, optional=False):
                 occupied = {tuple(np.array(r).dot(x) + offset) for x in piece}
                 if occupied <= board:
                     rows.add((name, tuple(sorted(occupied))))
+    rows = sorted(rows)
 
     # Convert placements to (row,col) pairs and optional column indices.
     cols = dict(enumerate(pieces))
@@ -40,11 +41,11 @@ def board_cover(board, pieces, rotations, optional=False):
         for x in occupied:
             pairs.append((i, cols[x]))
     return (pairs,
-            list(range(len(pieces), len(cols))) if optional else [])
+            list(range(len(pieces), len(cols))) if optional else [], rows)
 
 def print_cover(cover, file=sys.stdout):
     """Print exact cover problem for input to test_dlx."""
-    pairs, opts = cover
+    pairs, opts, rows = cover
     print(len(pairs), file=file)
     for i, j in pairs:
         print(i, j, file=file)
